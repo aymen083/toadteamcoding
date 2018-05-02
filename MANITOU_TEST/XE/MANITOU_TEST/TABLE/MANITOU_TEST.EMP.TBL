@@ -1,0 +1,63 @@
+ALTER TABLE MANITOU_TEST.EMP
+ DROP PRIMARY KEY CASCADE;
+
+DROP TABLE MANITOU_TEST.EMP CASCADE CONSTRAINTS;
+
+CREATE TABLE MANITOU_TEST.EMP
+(
+  EMPNO     NUMBER(4)                           NOT NULL,
+  ENAME     VARCHAR2(10 BYTE),
+  JOB       VARCHAR2(9 BYTE),
+  MGR       NUMBER(4),
+  HIREDATE  DATE,
+  SAL       NUMBER(7,2),
+  COMM      NUMBER(7,2),
+  DEPTNO    NUMBER(2)
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+--  There is no statement for index MANITOU_TEST.SYS_C007050.
+--  The object is created when the parent object is created.
+
+ALTER TABLE MANITOU_TEST.EMP ADD (
+  PRIMARY KEY
+  (EMPNO)
+  USING INDEX
+    TABLESPACE USERS
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                NEXT             1M
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                BUFFER_POOL      DEFAULT
+               )
+  ENABLE VALIDATE);
+
+ALTER TABLE MANITOU_TEST.EMP ADD (
+  FOREIGN KEY (MGR) 
+  REFERENCES MANITOU_TEST.EMP (EMPNO)
+  ENABLE VALIDATE,
+  FOREIGN KEY (DEPTNO) 
+  REFERENCES MANITOU_TEST.DEPT (DEPTNO)
+  ENABLE VALIDATE);
