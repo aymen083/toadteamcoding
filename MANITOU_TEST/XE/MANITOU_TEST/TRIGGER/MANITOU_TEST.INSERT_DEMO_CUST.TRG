@@ -1,0 +1,12 @@
+CREATE OR REPLACE TRIGGER MANITOU_TEST."INSERT_DEMO_CUST"
+BEFORE INSERT ON MANITOU_TEST.DEMO_CUSTOMERS
+FOR EACH ROW
+DECLARE
+  cust_id number;
+BEGIN
+  SELECT demo_cust_seq.nextval
+    INTO cust_id
+    FROM dual;
+  :new.CUSTOMER_ID := cust_id;
+END;
+/
