@@ -1,0 +1,133 @@
+ALTER TABLE MANITOU_TEST.APEX$_WS_LINKS
+ DROP PRIMARY KEY CASCADE;
+
+DROP TABLE MANITOU_TEST.APEX$_WS_LINKS CASCADE CONSTRAINTS;
+
+CREATE TABLE MANITOU_TEST.APEX$_WS_LINKS
+(
+  ID                NUMBER,
+  WS_APP_ID         NUMBER                      NOT NULL,
+  DATA_GRID_ID      NUMBER,
+  ROW_ID            NUMBER,
+  WEBPAGE_ID        NUMBER,
+  COMPONENT_LEVEL   VARCHAR2(30 BYTE),
+  TAGS              VARCHAR2(4000 BYTE),
+  SHOW_ON_HOMEPAGE  VARCHAR2(1 BYTE),
+  LINK_NAME         VARCHAR2(255 BYTE)          NOT NULL,
+  URL               VARCHAR2(4000 BYTE)         NOT NULL,
+  LINK_DESCRIPTION  VARCHAR2(4000 BYTE),
+  DISPLAY_SEQUENCE  NUMBER,
+  CREATED_ON        DATE                        NOT NULL,
+  CREATED_BY        VARCHAR2(255 BYTE)          NOT NULL,
+  UPDATED_ON        DATE,
+  UPDATED_BY        VARCHAR2(255 BYTE)
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+CREATE INDEX MANITOU_TEST.APEX$_WS_LINKS_IDX1 ON MANITOU_TEST.APEX$_WS_LINKS
+(WS_APP_ID, DATA_GRID_ID, ROW_ID)
+LOGGING
+TABLESPACE USERS
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE INDEX MANITOU_TEST.APEX$_WS_LINKS_IDX2 ON MANITOU_TEST.APEX$_WS_LINKS
+(WS_APP_ID, WEBPAGE_ID)
+LOGGING
+TABLESPACE USERS
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE UNIQUE INDEX MANITOU_TEST.APEX$_WS_LINKS_PK ON MANITOU_TEST.APEX$_WS_LINKS
+(ID)
+LOGGING
+TABLESPACE USERS
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE OR REPLACE TRIGGER MANITOU_TEST."APEX$_WS_LINKS_T1"
+before insert or update on "APEX$_WS_LINKS"
+for each row
+begin
+    --
+    -- maintain pk and timestamps
+    --
+    if inserting and :new.id is null then
+        select to_number(sys_guid(),'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') into :new.id from dual;
+    end if;
+    if inserting then
+        :new.created_on := sysdate;
+        :new.created_by := nvl(v('APP_USER'),user);
+        :new.updated_on := sysdate;
+        :new.updated_by := nvl(v('APP_USER'),user);
+    elsif updating then
+        :new.updated_on := sysdate;
+        :new.updated_by := nvl(v('APP_USER'),user);
+    end if;
+end;
+/
+
+
+ALTER TABLE MANITOU_TEST.APEX$_WS_LINKS ADD (
+  CONSTRAINT APEX$_WS_LINKS_CL_CK
+  CHECK (component_level in ('WEBSHEET','ROW','WORKSPACE','WEBPAGE'))
+  ENABLE VALIDATE,
+  CONSTRAINT APEX$_WS_LINKS_SH_CK
+  CHECK (show_on_homepage in ('Y','N'))
+  ENABLE VALIDATE,
+  CONSTRAINT APEX$_WS_LINKS_PK
+  PRIMARY KEY
+  (ID)
+  USING INDEX MANITOU_TEST.APEX$_WS_LINKS_PK
+  ENABLE VALIDATE);
+
+ALTER TABLE MANITOU_TEST.APEX$_WS_LINKS ADD (
+  CONSTRAINT APEX$_WS_LINKS_FK 
+  FOREIGN KEY (ROW_ID) 
+  REFERENCES MANITOU_TEST.APEX$_WS_ROWS (ID)
+  ON DELETE CASCADE
+  ENABLE VALIDATE);
