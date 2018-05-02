@@ -1,0 +1,12 @@
+CREATE OR REPLACE TRIGGER MANITOU_TEST."INSERT_DEMO_PROD"
+BEFORE INSERT ON MANITOU_TEST.DEMO_PRODUCT_INFO
+FOR EACH ROW
+DECLARE
+  prod_id number;
+BEGIN
+  SELECT demo_prod_seq.nextval
+    INTO prod_id
+    FROM dual;
+  :new.PRODUCT_ID := prod_id;
+END;
+/
