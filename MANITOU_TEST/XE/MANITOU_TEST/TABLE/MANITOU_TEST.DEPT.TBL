@@ -1,0 +1,50 @@
+ALTER TABLE MANITOU_TEST.DEPT
+ DROP PRIMARY KEY CASCADE;
+
+DROP TABLE MANITOU_TEST.DEPT CASCADE CONSTRAINTS;
+
+CREATE TABLE MANITOU_TEST.DEPT
+(
+  DEPTNO  NUMBER(2),
+  DNAME   VARCHAR2(14 BYTE),
+  LOC     VARCHAR2(13 BYTE)
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+--  There is no statement for index MANITOU_TEST.SYS_C007048.
+--  The object is created when the parent object is created.
+
+ALTER TABLE MANITOU_TEST.DEPT ADD (
+  PRIMARY KEY
+  (DEPTNO)
+  USING INDEX
+    TABLESPACE USERS
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                NEXT             1M
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                BUFFER_POOL      DEFAULT
+               )
+  ENABLE VALIDATE);
