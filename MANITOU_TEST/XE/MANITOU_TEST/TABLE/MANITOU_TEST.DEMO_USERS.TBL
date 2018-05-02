@@ -1,0 +1,86 @@
+ALTER TABLE MANITOU_TEST.DEMO_USERS
+ DROP PRIMARY KEY CASCADE;
+
+DROP TABLE MANITOU_TEST.DEMO_USERS CASCADE CONSTRAINTS;
+
+CREATE TABLE MANITOU_TEST.DEMO_USERS
+(
+  USER_ID     NUMBER,
+  USER_NAME   VARCHAR2(100 BYTE),
+  PASSWORD    VARCHAR2(4000 BYTE),
+  CREATED_ON  DATE,
+  QUOTA       NUMBER,
+  PRODUCTS    CHAR(1 BYTE),
+  EXPIRES_ON  DATE,
+  ADMIN_USER  CHAR(1 BYTE)
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+CREATE UNIQUE INDEX MANITOU_TEST.DEMO_USERS_PK ON MANITOU_TEST.DEMO_USERS
+(USER_ID)
+LOGGING
+TABLESPACE USERS
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE OR REPLACE TRIGGER MANITOU_TEST."BI_DEMO_USERS"
+BEFORE
+insert ON MANITOU_TEST.DEMO_USERS
+for each row
+begin
+begin
+  for c1 in (
+    select DEMO_USERS_SEQ.nextval next_val
+    from dual
+  ) loop
+    :new.USER_ID :=  c1.next_val;
+    :new.admin_user := 'N';
+    :new.created_on := sysdate;
+  end loop;
+end;
+end;
+/
+
+
+CREATE OR REPLACE TRIGGER MANITOU_TEST."DEMO_USERS_T1"
+BEFORE
+insert or update ON MANITOU_TEST.DEMO_USERS
+for each row
+begin
+:NEW.user_name := upper(:NEW.user_name);
+end;
+/
+
+
+ALTER TABLE MANITOU_TEST.DEMO_USERS ADD (
+  CONSTRAINT DEMO_USERS_PK
+  PRIMARY KEY
+  (USER_ID)
+  USING INDEX MANITOU_TEST.DEMO_USERS_PK
+  ENABLE VALIDATE);
