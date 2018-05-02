@@ -1,0 +1,80 @@
+DROP TABLE MANITOU_TEST.APEX$_WS_WEBPG_SECTION_HISTORY CASCADE CONSTRAINTS;
+
+CREATE TABLE MANITOU_TEST.APEX$_WS_WEBPG_SECTION_HISTORY
+(
+  SECTION_ID            NUMBER                  NOT NULL,
+  WS_APP_ID             NUMBER                  NOT NULL,
+  WEBPAGE_ID            NUMBER                  NOT NULL,
+  OLD_DISPLAY_SEQUENCE  NUMBER,
+  NEW_DISPLAY_SEQUENCE  NUMBER,
+  OLD_TITLE             VARCHAR2(4000 BYTE),
+  NEW_TITLE             VARCHAR2(4000 BYTE),
+  OLD_CONTENT           CLOB,
+  NEW_CONTENT           CLOB,
+  APPLICATION_USER_ID   VARCHAR2(255 BYTE)      NOT NULL,
+  CHANGE_DATE           DATE                    NOT NULL
+)
+LOB (OLD_CONTENT) STORE AS BASICFILE (
+  TABLESPACE  USERS
+  ENABLE      STORAGE IN ROW
+  CHUNK       8192
+  RETENTION
+  NOCACHE
+  LOGGING
+      STORAGE    (
+                  INITIAL          64K
+                  NEXT             1M
+                  MINEXTENTS       1
+                  MAXEXTENTS       UNLIMITED
+                  PCTINCREASE      0
+                  BUFFER_POOL      DEFAULT
+                 ))
+LOB (NEW_CONTENT) STORE AS BASICFILE (
+  TABLESPACE  USERS
+  ENABLE      STORAGE IN ROW
+  CHUNK       8192
+  RETENTION
+  NOCACHE
+  LOGGING
+      STORAGE    (
+                  INITIAL          64K
+                  NEXT             1M
+                  MINEXTENTS       1
+                  MAXEXTENTS       UNLIMITED
+                  PCTINCREASE      0
+                  BUFFER_POOL      DEFAULT
+                 ))
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+CREATE INDEX MANITOU_TEST.APEX$_WS_WEBPG_SECHIST_IDX1 ON MANITOU_TEST.APEX$_WS_WEBPG_SECTION_HISTORY
+(WS_APP_ID, WEBPAGE_ID, SECTION_ID)
+LOGGING
+TABLESPACE USERS
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           );
