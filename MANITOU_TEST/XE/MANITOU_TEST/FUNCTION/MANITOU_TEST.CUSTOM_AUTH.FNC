@@ -6,7 +6,7 @@ is
   l_expires_on date;
   l_count number;
 begin
--- Comment frm anouira
+-- Comment from anouira
 -- First, check to see if the user is in the user table
 select count(*) into l_count from demo_users where user_name = p_username;
 if l_count > 0 then
